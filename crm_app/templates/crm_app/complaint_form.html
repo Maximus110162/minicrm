@@ -1,0 +1,49 @@
+{% extends "../base.html" %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Complaint{% else %}Create Complaint{% endif %}
+{% endblock %}
+
+{% block content %}
+    <h2>{% if form.instance.pk %}Edit Complaint{% else %}Create Complaint{% endif %}</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="form-group">
+            {{ form.client_account.label_tag }}
+            {{ form.client_account }}
+        </div>
+        <div class="form-group">
+            {{ form.client_name.label_tag }}
+            {{ form.client_name }}
+        </div>
+        <div class="form-group">
+            {{ form.client_phone.label_tag }}
+            {{ form.client_phone }}
+        </div>
+        <div class="form-group">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+        </div>
+        <div class="form-group">
+            {{ form.status.label_tag }}
+            {{ form.status }}
+        </div>
+        {% if request.user.role == 'back_office' %}
+            <div class="form-group">
+                {{ form.comments.label_tag }}
+                {{ form.comments }}
+            </div>
+        {% else %}
+            <div class="form-group">
+                <label for="id_comments">Comments</label>
+                <textarea class="form-control" id="id_comments" readonly>{{ form.instance.comments }}</textarea>
+            </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    {% if request.user.role == 'back_office' %}
+        <p>Assigned To: {{ complaint.assigned_to.get_full_name }} ({{ complaint.assigned_to.username }})</p>
+    {% endif %}
+    <a href="{% url 'complaint_list' %}" class="btn btn-secondary mt-3">Back to list</a>
+{% endblock %}

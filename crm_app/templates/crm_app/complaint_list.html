@@ -1,0 +1,61 @@
+{% extends "../base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Complaints{% endblock %}
+
+{% block content %}
+    <h2>Complaints</h2>
+    {% if user.role == 'operator' %}
+        <a href="{% url 'complaint_create' %}" class="btn btn-primary mb-3">Create Complaint</a>
+    {% endif %}
+    <form method="get" action="{% url 'complaint_list' %}">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search by client" class="form-control mb-3">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Client Account</th>
+                <th>Status</th>
+                {% if user.role == 'back_office' %}
+                    <th>Operator</th>
+                {% else %}
+                    <th>Assigned To</th>
+                {% endif %}
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for complaint in complaints %}
+                <tr>
+                    <td>{{ complaint.client_name }}</td>
+                    <td>{{ complaint.client_account }}</td>
+                    <td>
+                        {% if user.role == 'back_office' %}
+                            <form method="post" action="{% url 'complaint_update_status' complaint.pk %}">
+                                {% csrf_token %}
+                                <select name="status" class="form-control" onchange="this.form.submit()">
+                                    <option value="open" {% if complaint.status == 'open' %}selected{% endif %}>Open</option>
+                                    <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                    <option value="closed" {% if complaint.status == 'closed' %}selected{% endif %}>Closed</option>
+                                </select>
+                            </form>
+                        {% else %}
+                            {{ complaint.status }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.role == 'back_office' %}
+                            {{ complaint.created_by.username }}
+                        {% else %}
+                            {{ complaint.assigned_to.username }}
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'complaint_edit' complaint.pk %}" class="btn btn-warning">Edit</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

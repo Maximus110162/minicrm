@@ -1,0 +1,20 @@
+<!-- crm_app/templates/registration/login.html -->
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<h2>Login</h2>
+<form method="post" class="form-signin">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" class="form-control" required autofocus>
+    </div>
+    <div class="form-group">
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-lg btn-primary btn-block">Login</button>
+</form>
+{% endblock %}
